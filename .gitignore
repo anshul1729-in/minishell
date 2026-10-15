@@ -1,0 +1,6 @@
+# Ignore compiled binary
+minishell
+
+# Ignore test redirection files
+*.txt
+*.log
