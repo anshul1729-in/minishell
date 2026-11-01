@@ -4,7 +4,6 @@ A custom POSIX-compliant command-line shell written in C that implements multi-s
 
 ## Overview
 
-<!-- CUSTOMIZE: Rewrite this paragraph in your own words to explain why you built this project -->
 When we type commands into a terminal, it is easy to forget that a shell is just an ordinary user-space C program orchestrating Linux system calls. I built `minishell` from scratch to understand how the Linux kernel creates processes, how programs communicate through in-memory pipes by manipulating the per-process File Descriptor Table, and how terminal job control manages foreground and background process groups.
 
 ---
@@ -12,7 +11,6 @@ When we type commands into a terminal, it is easy to forget that a shell is just
 ## Core Linux Kernel Primitives Covered
 
 ### 1. Process Lifecycle (`fork()`, `execve()`, `waitpid()`)
-<!-- CUSTOMIZE: Explain in your own words how fork clones the process and execve replaces its memory -->
 * **`fork()`:** Clones the running shell process into an identical child process.
 * **`execve()`:** Resolves the binary path across `$PATH` and replaces the child process's memory space with the target program while preserving its rewired File Descriptor Table.
 * **`waitpid()`:** Used with `WUNTRACED` to block for foreground jobs (catching both exits and `Ctrl+Z` stops) and with `WNOHANG` to asynchronously reap completed background (`&`) jobs without freezing the shell prompt.
@@ -36,7 +34,6 @@ In the brief window between `fork()` and `execve()`, `minishell` uses `dup2(oldf
 * **Error Redirection (`2>&1`):** Calls `dup2(STDOUT_FILENO, STDERR_FILENO)` so `FD 2` points to the exact same kernel file description as `FD 1`.
 
 ### 3. Job Control, Process Groups & Signals (`SIGINT`, `SIGTSTP`)
-<!-- CUSTOMIZE: Explain in your own words why Ctrl+C kills the running command instead of killing your shell -->
 To prevent `Ctrl+C` (`SIGINT`) or `Ctrl+Z` (`SIGTSTP`) from killing the shell itself:
 * The main `minishell` process ignores `SIGINT`, `SIGTSTP`, `SIGTTIN`, and `SIGTTOU` (`SIG_IGN`), while child processes restore default signal handlers (`SIG_DFL`) before calling `execve()`.
 * Every pipeline is placed into its own **Process Group** via `setpgid(pid, pgid)`.
